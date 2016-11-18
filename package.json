@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "glslify": "^6.0.1",
     "regl": "^1.2.1",
     "regl-camera": "^1.1.0"
   }
