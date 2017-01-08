@@ -28,26 +28,31 @@ function prevFBO (n) {
   return ({tick}) => stateFBO[(tick + T - n) % T]
 }
 
-const bigTriangle = {
+const box = {
   vert: `
   precision mediump float;
-  attribute vec2 position;
+  attribute vec3 position;
   varying vec2 uv;
   void main () {
-    uv = 0.5 * (position + 1.0);
-    gl_Position = vec4(position, 0, 1);
+    uv = 0.5 * (vec2(position.x, position.y) + 1.0);
+    gl_Position = vec4(position, 1);
   }
   `,
 
   attributes: {
     position: [
-      [-4, 0],
-      [4, 4],
-      [4, -4]
+      [-1, -1, 1],
+      [1, -1, 1],
+      [-1, -1, -1],
+      [1, -1, -1],
+      [-1, 1, 1],
+      [1, 1, 1],
+      [-1, 1, -1],
+      [-1, 1, 1]
     ]
   },
 
-  count: 3
+  count: 8
 }
 
 const update = regl(Object.assign({
@@ -89,7 +94,7 @@ const update = regl(Object.assign({
     gl_FragColor = 0.99 * (s0 + (s0 - s1 + 0.5 * L) + I);
   }
   `
-}, bigTriangle))
+}, box))
 
 const drawImage = regl(Object.assign({
   frag: `
@@ -115,7 +120,7 @@ const drawImage = regl(Object.assign({
   depth: {
     enable: false
   }
-}, bigTriangle))
+}, box))
 
 const drawPoints = regl({
   vert: `
@@ -198,7 +203,7 @@ function init () {
     `,
 
     framebuffer: regl.prop('framebuffer')
-  }, bigTriangle))
+  }, box))
 
   for (let i = 0; i < T; ++i) {
     initFBO({
