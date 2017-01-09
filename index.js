@@ -1,59 +1,67 @@
 const regl = require('regl')()
 const mat4 = require('gl-mat4')
 const box = require('./box')
-const camera = require('regl-camera')(regl, {
-  distance: 5
-})
+const fit = require('canvas-fit')
+const normals = require('angle-normals')
+const canvas = document.body.appendChild(document.createElement('canvas'))
+const camera = require('canvas-orbit-camera')(canvas)
+window.addEventListener('resize', fit(canvas), false)
 
-const drawBox = regl({
-  vert: `
-  precision mediump float;
-  attribute vec3 position;
-  varying vec3 p;
-  uniform mat4 model, view, projection;
-  void main() {
-    p = position;
-    gl_Position = projection * view * model * vec4(position, 1);
-  }`,
-
+const drawBunny = regl({
   frag: `
-  precision mediump float;
-  varying vec3 p;
-  void main() {
-    gl_FragColor = vec4(p, 1);
-  }`,
-
-  // this converts the vertices of the mesh into the position attribute
+    precision mediump float;
+    varying vec3 vnormal;
+    void main () {
+      gl_FragColor = vec4(abs(vnormal), 1.0);
+    }`,
+  vert: `
+    precision mediump float;
+    uniform mat4 proj;
+    uniform mat4 model;
+    uniform mat4 view;
+    attribute vec3 position;
+    attribute vec3 normal;
+    varying vec3 vnormal;
+    uniform vec2 offset;
+    void main () {
+      vnormal = normal;
+      vec3 newPosition = vec3(position.xy + offset * 4.0, position.z);
+      gl_Position = proj * view * model * vec4(newPosition, 1.0);
+    }`,
   attributes: {
-    position: box.positions
+    position: box.positions,
+    normal: normals(box.elements, box.positions)
   },
-  // and this converts the faces fo the mesh into elements
   elements: box.elements,
-
   uniforms: {
-    model: mat4.identity([]),
-    view: ({tick}) => {
-      const t = 0.01 * tick
-      return mat4.lookAt([],
-        [30 * Math.cos(t), 2.5, 30 * Math.sin(t)],
-        [0, 2.5, 0],
-        [0, 1, 0])
-    },
-    projection: ({viewportWidth, viewportHeight}) =>
+    proj: ({viewportWidth, viewportHeight}) =>
       mat4.perspective([],
-        Math.PI / 4,
+        Math.PI / 2,
         viewportWidth / viewportHeight,
         0.01,
-        1000)
+        1000),
+    model: mat4.identity([]),
+    view: () => camera.view(),
+    offset: regl.prop('offset')
   }
 })
 
 regl.frame(() => {
   regl.clear({
-    depth: 1,
     color: [0, 0, 0, 1]
   })
-  camera(() => {
-    drawBox()
-  })
+  camera.tick()
+  drawBunny(
+    [
+    { offset: [-1, -1] },
+    { offset: [-1, 0] },
+    { offset: [-1, 1] },
+    { offset: [0, -1] },
+    { offset: [0, 0] },
+    { offset: [0, 1] },
+    { offset: [1, -1] },
+    { offset: [1, 0] },
+    { offset: [1, 1] }
+  ]
+  )
 })

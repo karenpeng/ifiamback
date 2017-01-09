@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "canvas-orbit-camera": "^1.0.2",
     "gl-mat4": "^1.1.4",
     "glslify": "^6.0.1",
     "regl": "^1.2.1",
