@@ -19,8 +19,8 @@ const logics = [
     void main() {
       vec2 uv       = gl_FragCoord.xy / resolution;
       vec4 tData    = texture2D(data, uv);
-      vec2 position = tData.xy;
-      vec2 speed    = tData.zw;
+      vec2 position = tData.rg;
+      vec2 speed    = tData.ba;
 
       speed.x += noise(vec3(position * 2.125, uv.x + time)) * 0.000225;
       speed.y += noise(vec3(position * 2.125, uv.y + time + 1000.0)) * 0.000225;
@@ -57,8 +57,8 @@ const logics = [
     void main() {
       vec2 uv       = gl_FragCoord.xy / resolution;
       vec4 tData    = texture2D(data, uv);
-      vec2 position = tData.xy;
-      vec2 speed    = tData.zw;
+      vec2 position = tData.rg;
+      vec2 speed    = tData.ba;
 
       speed.x += noise(vec3(position * 2.125, uv.x + time)) * 0.0005;
       speed.y += noise(vec3(position * 2.125, uv.y + time + 1000.0)) * 0.0005;
@@ -74,7 +74,7 @@ const logics = [
 ]
 
 const particles = Particles(gl, {
-  shape: [64, 64],
+  shape: [256, 256],
   logic: logics[0],
   vert: `
     precision mediump float;
@@ -86,7 +86,7 @@ const particles = Particles(gl, {
 
     void main() {
       vec4 tData = texture2D(data, uv);
-      vec2 position = tData.xy;
+      vec2 position = tData.rg;
 
       position.x *= resolution.y / resolution.x;
 

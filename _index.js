@@ -173,18 +173,19 @@ const drawPoints = regl({
 init()
 
 regl.frame(() => {
-  update({
-    impulse: [Math.random(), Math.random()],
-    weight: Math.pow(Math.random(), 8.0)
-  })
-  // drawImage()
+  // update({
+  //   impulse: [Math.random(), Math.random()],
+  //   weight: Math.pow(Math.random(), 8.0)
+  // })
+  //drawImage()
 
   regl.clear({
     color: [0, 0, 0, 1],
     depth: 1
   })
   camera(() => {
-    drawPoints()
+    //drawPoints()
+    drawImage()
   })
 })
 
