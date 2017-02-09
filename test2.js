@@ -79,34 +79,47 @@ const update = regl(Object.assign({
     state: prevFBO(0),
     resolution: ({viewportWidth, viewportHeight}) =>
       [viewportWidth, viewportHeight],
-    time: ({tick}) => tick * 0.001
+    time: ({tick}) => tick * 0.001,
+    'state[0]': prevFBO(0),
+    'state[1]': prevFBO(1)
   },
   frag: `
+    // precision mediump float;
+    //
+    // uniform sampler2D state;
+    // uniform float time;
+    // //uniform vec2 resolution;
+    // varying vec2 uv;
+    //
+    // // looks like below wont work
+    // //#pragma glslify: noise = require('glsl-noise/simplex/3d')
+    //
+    // void main() {
+    //   // // vec2 uv       = gl_FragCoord.xy / resolution;
+    //   vec4 tData    = texture2D(state, uv);
+    //   vec2 position = tData.rg;
+    //   vec2 speed    = tData.ba;
+    //
+    //   speed.x += sin(position.x * 2.125 + uv.x + time) * 0.0005;
+    //   speed.y += cos(position.y * 2.125 + uv.y + time + 1000.0) * 0.0005;
+    //
+    //   position += speed;
+    //   speed *= 0.975;
+    //   position *= 0.995;
+    //
+    //   gl_FragColor = vec4(position, speed);
+    //   gl_FragColor = vec4(position, speed);
+    // }
     precision mediump float;
-
-    uniform sampler2D state;
-    uniform float time;
-    //uniform vec2 resolution;
+    uniform sampler2D state[2];
     varying vec2 uv;
-
-    // looks like below wont work
-    //#pragma glslify: noise = require('glsl-noise/simplex/3d')
-
-    void main() {
-      // // vec2 uv       = gl_FragCoord.xy / resolution;
-      vec4 tData    = texture2D(state, uv);
-      vec2 position = tData.rg;
-      vec2 speed    = tData.ba;
-
-      speed.x += sin(position.x * 2.125 + uv.x + time) * 0.0005;
-      speed.y += cos(position.y * 2.125 + uv.y + time + 1000.0) * 0.0005;
-
-      position += speed;
-      speed *= 0.975;
-      position *= 0.995;
-
-      gl_FragColor = vec4(position, speed);
-      gl_FragColor = vec4(position, speed);
+    void main () {
+      float s0 = texture2D(state[0], uv).r;
+      float s1 = texture2D(state[1], uv).g;
+      float s2 = texture2D(state[1], uv).b;
+      float lo = min(min(s0, s1), s2);
+      float hi = max(max(s0, s1), s2);
+      gl_FragColor = vec4(s0, s1, s2, 1);
     }
   `},
   initVert
