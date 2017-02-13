@@ -72,7 +72,7 @@ const logics = [
 ]
 
 const particles = Particles(gl, {
-  shape: [256, 256],
+  shape: [512, 512],
   logic: logics[0],
   vert: `
     precision mediump float;
@@ -88,7 +88,7 @@ const particles = Particles(gl, {
 
       position.x *= resolution.y / resolution.x;
 
-      gl_PointSize = 4.0;
+      gl_PointSize = 1.0;
       gl_Position = vec4(position, 1, 1);
     }
   `,
