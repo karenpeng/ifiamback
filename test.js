@@ -42,7 +42,6 @@ const logics = [
       position *= 0.995;
 
       gl_FragColor = vec4(position, speed);
-      gl_FragColor = vec4(position, speed);
     }
   `, { inline: true }),
   glslify(`
@@ -67,7 +66,6 @@ const logics = [
       speed *= 0.975;
       position *= 0.995;
 
-      gl_FragColor = vec4(position, speed);
       gl_FragColor = vec4(position, speed);
     }
   `, { inline: true })
