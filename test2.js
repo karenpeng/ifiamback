@@ -43,6 +43,10 @@ function nextFBO ({tick}) {
   return stateFBO[tick % T]
 }
 
+function prevFBO (n) {
+  return ({tick}) => stateFBO[(tick + T - n) % T]
+}
+
 function swap(tick) {
   const tmp = stateFBO[tick % T]
   stateFBO[(tick - 1) % T] = stateFBO[tick % T]
@@ -104,7 +108,7 @@ const update = regl(Object.assign({
   framebuffer: nextFBO,
 
   uniforms: {
-    data: nextFBO,
+    data: prevFBO(1),
     resolution: ({viewportWidth, viewportHeight}) =>
       [viewportWidth, viewportHeight],
     time: ({tick}) => tick
